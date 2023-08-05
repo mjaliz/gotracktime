@@ -1,14 +1,20 @@
 package main
 
 import (
-	"github.com/labstack/echo/v4"
-	"net/http"
+	"github.com/mjaliz/gotracktime/internal/config"
+	"github.com/mjaliz/gotracktime/internal/handlers"
+	"log"
 )
 
+var app config.AppConfig
+var repo *handlers.DBRepo
+
 func main() {
-	e := echo.New()
-	e.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Hello, World!")
-	})
+	err := setupApp()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	e := routes()
 	e.Logger.Fatal(e.Start(":1323"))
 }
