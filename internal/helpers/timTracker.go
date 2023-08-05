@@ -1,21 +1,8 @@
-package main
+package helpers
 
-import (
-	"fmt"
-	"time"
-)
+import "time"
 
 var timeChan = make(chan time.Duration)
-
-func main() {
-	go trackTime()
-	for {
-		select {
-		case t := <-timeChan:
-			fmt.Println(t)
-		}
-	}
-}
 
 func trackTime() {
 	start := time.Now().UTC()
