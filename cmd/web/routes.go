@@ -1,12 +1,13 @@
 package main
 
 import (
-	"github.com/labstack/echo/v4"
+	"github.com/gin-gonic/gin"
 	"github.com/mjaliz/gotracktime/internal/handlers"
 )
 
-func routes() *echo.Echo {
-	e := echo.New()
-	e.GET("/", handlers.Repo.Home)
-	return e
+func setupRoutes() *gin.Engine {
+	r := gin.Default()
+	r.GET("/", handlers.Repo.Home)
+	r.POST("/user/sign_up", handlers.Repo.SignUp)
+	return r
 }

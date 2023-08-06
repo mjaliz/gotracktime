@@ -15,6 +15,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	e := routes()
-	e.Logger.Fatal(e.Start(":1323"))
+	r := setupRoutes()
+	if err = r.Run(":8082"); err != nil {
+		log.Fatal(err)
+	}
 }
