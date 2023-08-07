@@ -16,7 +16,7 @@ func main() {
 	}
 
 	r := setupRoutes()
-	if err = r.Run(":8082"); err != nil {
+	if err = r.Run(":8080"); err != nil {
 		log.Fatal(err)
 	}
 }

@@ -17,7 +17,7 @@ services:
     image: adminer:4.8.1-standalone
     container_name: ${SERVICE}-adminer
     ports:
-      - "8080:8080"
+      - "8082:8082"
     restart: always
     depends_on:
       - postgres
