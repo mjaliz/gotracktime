@@ -60,5 +60,10 @@ func (repo *DBRepo) SignUp(c *gin.Context) {
 		}
 		return
 	}
-	helpers.SuccessResponse(c, http.StatusCreated, user, "")
+	accessToken, err := helpers.GenerateJWT(&user)
+	if err != nil {
+		panic(err)
+	}
+	user.AccessToken = accessToken
+	helpers.SuccessResponse(c, http.StatusCreated, user.PrivateUser(), "")
 }
