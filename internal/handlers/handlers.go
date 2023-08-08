@@ -38,7 +38,7 @@ func NewPostgresqlHandlers(db *driver.DB, a *config.AppConfig) *DBRepo {
 }
 
 func (repo *DBRepo) Home(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{})
+	helpers.SuccessResponse(c, http.StatusOK, nil, "Welcome to timemyth")
 }
 
 func (repo *DBRepo) SignUp(c *gin.Context) {
@@ -46,6 +46,10 @@ func (repo *DBRepo) SignUp(c *gin.Context) {
 	if err := c.ShouldBindJSON(&user); err != nil {
 		validationErrs := helpers.ParseValidationError(err)
 		helpers.FailedResponse(c, http.StatusBadRequest, validationErrs, "")
+		return
+	}
+	if user.Password != user.PasswordConfirm {
+		helpers.FailedResponse(c, http.StatusBadRequest, nil, "password and password confirm didn't match")
 		return
 	}
 	err := repo.DB.InsertUser(user)
