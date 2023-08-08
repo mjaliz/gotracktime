@@ -2,8 +2,7 @@ package helpers
 
 import (
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/mjaliz/gotracktime/internal/constants"
-	"github.com/mjaliz/gotracktime/internal/inputs"
+	"github.com/mjaliz/gotracktime/internal/models"
 	"os"
 	"time"
 )
@@ -11,16 +10,14 @@ import (
 var jwtSecretKey = []byte(os.Getenv("JWT_KEY"))
 
 type JWTClaim struct {
-	Username string `json:"username"`
-	Email    string `json:"email"`
+	UserID uint   `json:"userid"`
+	Email  string `json:"email"`
 	jwt.RegisteredClaims
 }
 
-func GenerateJWT(u *inputs.User) (string, error) {
-	expiredAt := time.Now().UTC().Add(constants.JWTExpireDuration)
+func GenerateJWT(u *models.User, expiredAt time.Time) (string, error) {
 	claims := &JWTClaim{
-		Username: u.Name,
-		Email:    u.Email,
+		UserID: u.ID,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expiredAt),
 		},

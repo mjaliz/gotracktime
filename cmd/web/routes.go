@@ -9,5 +9,6 @@ func setupRoutes() *gin.Engine {
 	r := gin.Default()
 	r.GET("/", handlers.Repo.Home)
 	r.POST("/user/sign_up", handlers.Repo.SignUp)
+	r.POST("/user/sign_in", handlers.Repo.SignIn)
 	return r
 }

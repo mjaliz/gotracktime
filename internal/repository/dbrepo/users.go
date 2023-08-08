@@ -7,7 +7,7 @@ import (
 )
 
 func (p *postgresDBRepo) InsertUser(u inputs.User) error {
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(u.Password), 12)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(u.Password), 14)
 	if err != nil {
 		return err
 	}
@@ -20,4 +20,12 @@ func (p *postgresDBRepo) InsertUser(u inputs.User) error {
 		return err
 	}
 	return nil
+}
+
+func (p *postgresDBRepo) FindUserByEmail(u inputs.UserSignIn) (models.User, error) {
+	var user models.User
+	if err := p.DB.Where("email  = ?", u.Email).First(&user).Error; err != nil {
+		return models.User{}, err
+	}
+	return user, nil
 }
