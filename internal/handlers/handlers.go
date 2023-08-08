@@ -1,20 +1,19 @@
 package handlers
 
 import (
-	"errors"
-	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"github.com/mjaliz/gotracktime/internal/config"
 	"github.com/mjaliz/gotracktime/internal/driver"
+	"github.com/mjaliz/gotracktime/internal/helpers"
 	"github.com/mjaliz/gotracktime/internal/inputs"
 	"github.com/mjaliz/gotracktime/internal/repository"
 	"github.com/mjaliz/gotracktime/internal/repository/dbrepo"
 	"log"
 	"net/http"
+	"strings"
 )
 
-//Repo is the repository
+// Repo is the repository
 var Repo *DBRepo
 var app *config.AppConfig
 
@@ -39,54 +38,23 @@ func NewPostgresqlHandlers(db *driver.DB, a *config.AppConfig) *DBRepo {
 }
 
 func (repo *DBRepo) Home(c *gin.Context) {
-	c.String(http.StatusOK, "Hello, World!")
-}
-
-type ErrorMsg struct {
-	Field   string `json:"field"`
-	Message string `json:"message"`
-}
-
-func getErrorMsg(fe validator.FieldError) string {
-	var errMsg string
-	switch fe.Tag() {
-	case "required":
-		errMsg = "This field is required"
-	case "lte":
-		errMsg = fmt.Sprintf("Should be less than %s", fe.Param())
-	case "gte":
-		errMsg = fmt.Sprintf("Should be greater than %s", fe.Param())
-	default:
-		errMsg = "Unknown error"
-	}
-	return errMsg
+	c.JSON(http.StatusOK, gin.H{})
 }
 
 func (repo *DBRepo) SignUp(c *gin.Context) {
 	var user inputs.User
 	if err := c.ShouldBindJSON(&user); err != nil {
-		var ve validator.ValidationErrors
-		if errors.As(err, &ve) {
-			out := make([]ErrorMsg, len(ve))
-			for i, fe := range ve {
-				out[i] = ErrorMsg{fe.Field(), getErrorMsg(fe)}
-			}
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-				"status":  false,
-				"message": out,
-				"data":    nil,
-			})
-		}
+		validationErrs := helpers.ParseValidationError(err)
+		helpers.FailedResponse(c, http.StatusBadRequest, validationErrs, "")
 		return
 	}
 	err := repo.DB.InsertUser(user)
 	if err != nil {
 		log.Println(err)
+		if strings.Contains(err.Error(), "duplicate key value") {
+			helpers.FailedResponse(c, http.StatusBadRequest, nil, "email already exists")
+		}
 		return
 	}
-	c.JSON(http.StatusCreated, gin.H{
-		"status":  true,
-		"message": nil,
-		"data":    user,
-	})
+	helpers.SuccessResponse(c, http.StatusCreated, user, "")
 }
