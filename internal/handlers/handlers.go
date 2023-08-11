@@ -96,3 +96,7 @@ func (repo *DBRepo) SignIn(c *gin.Context) {
 	}
 	helpers.SuccessResponse(c, http.StatusOK, models.SignInOutput{AccessToken: accessToken}, "")
 }
+
+func Ping(c *gin.Context) {
+	helpers.SuccessResponse(c, http.StatusOK, gin.H{"message": "pong"}, "")
+}
