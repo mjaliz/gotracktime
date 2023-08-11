@@ -7,7 +7,7 @@ import (
 	"github.com/mjaliz/gotracktime/internal/constants"
 	"github.com/mjaliz/gotracktime/internal/driver"
 	"github.com/mjaliz/gotracktime/internal/helpers"
-	"github.com/mjaliz/gotracktime/internal/inputs"
+	"github.com/mjaliz/gotracktime/internal/models"
 	"github.com/mjaliz/gotracktime/internal/repository"
 	"github.com/mjaliz/gotracktime/internal/repository/dbrepo"
 	"golang.org/x/crypto/bcrypt"
@@ -47,17 +47,17 @@ func (repo *DBRepo) Home(c *gin.Context) {
 }
 
 func (repo *DBRepo) SignUp(c *gin.Context) {
-	var user inputs.User
-	if err := c.ShouldBindJSON(&user); err != nil {
+	var userInput models.SignUpInput
+	if err := c.ShouldBindJSON(&userInput); err != nil {
 		validationErrs := helpers.ParseValidationError(err)
 		helpers.FailedResponse(c, http.StatusBadRequest, validationErrs, "")
 		return
 	}
-	if user.Password != user.PasswordConfirm {
+	if userInput.Password != userInput.PasswordConfirm {
 		helpers.FailedResponse(c, http.StatusBadRequest, nil, "password and password confirm didn't match")
 		return
 	}
-	err := repo.DB.InsertUser(user)
+	userDB, err := repo.DB.InsertUser(userInput)
 	if err != nil {
 		log.Println(err)
 		if strings.Contains(err.Error(), "duplicate key value") {
@@ -65,17 +65,17 @@ func (repo *DBRepo) SignUp(c *gin.Context) {
 		}
 		return
 	}
-	helpers.SuccessResponse(c, http.StatusCreated, user.PrivateUser(), "")
+	helpers.SuccessResponse(c, http.StatusCreated, userDB.FilterUserResponse(), "")
 }
 
 func (repo *DBRepo) SignIn(c *gin.Context) {
-	var user inputs.UserSignIn
-	if err := c.ShouldBindJSON(&user); err != nil {
+	var userInput models.SignInInput
+	if err := c.ShouldBindJSON(&userInput); err != nil {
 		validationErrs := helpers.ParseValidationError(err)
 		helpers.FailedResponse(c, http.StatusBadRequest, validationErrs, "")
 		return
 	}
-	userDB, err := repo.DB.FindUserByEmail(user)
+	userDB, err := repo.DB.FindUserByEmail(userInput)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			helpers.FailedResponse(c, http.StatusUnauthorized, nil, "")
@@ -84,7 +84,7 @@ func (repo *DBRepo) SignIn(c *gin.Context) {
 		helpers.FailedResponse(c, http.StatusInternalServerError, nil, "")
 		return
 	}
-	if err = bcrypt.CompareHashAndPassword([]byte(userDB.Password), []byte(user.Password)); err != nil {
+	if err = bcrypt.CompareHashAndPassword([]byte(userDB.Password), []byte(userInput.Password)); err != nil {
 		helpers.FailedResponse(c, http.StatusUnauthorized, nil, "")
 		return
 	}
@@ -94,5 +94,5 @@ func (repo *DBRepo) SignIn(c *gin.Context) {
 		helpers.FailedResponse(c, http.StatusInternalServerError, nil, "")
 		return
 	}
-	c.SetCookie("accessToken", accessToken, expiredAt.Second(), "/", "localhost", false, false)
+	helpers.SuccessResponse(c, http.StatusOK, models.SignInOutput{AccessToken: accessToken}, "")
 }
