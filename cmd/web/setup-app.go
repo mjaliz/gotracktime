@@ -5,7 +5,7 @@ import (
 	"github.com/mjaliz/gotracktime/internal/config"
 	"github.com/mjaliz/gotracktime/internal/driver"
 	"github.com/mjaliz/gotracktime/internal/handlers"
-	"github.com/mjaliz/gotracktime/internal/helpers"
+	"github.com/mjaliz/gotracktime/internal/utils"
 	"log"
 	"os"
 )
@@ -27,6 +27,6 @@ func setupApp() error {
 
 	repo = handlers.NewPostgresqlHandlers(db, &app)
 	handlers.NewHandlers(repo, &app)
-	helpers.NewHelpers(&app)
+	utils.NewHelpers(&app)
 	return err
 }

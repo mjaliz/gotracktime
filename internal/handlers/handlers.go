@@ -6,10 +6,10 @@ import (
 	"github.com/mjaliz/gotracktime/internal/config"
 	"github.com/mjaliz/gotracktime/internal/constants"
 	"github.com/mjaliz/gotracktime/internal/driver"
-	"github.com/mjaliz/gotracktime/internal/helpers"
 	"github.com/mjaliz/gotracktime/internal/models"
 	"github.com/mjaliz/gotracktime/internal/repository"
 	"github.com/mjaliz/gotracktime/internal/repository/dbrepo"
+	"github.com/mjaliz/gotracktime/internal/utils"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 	"log"
@@ -43,60 +43,60 @@ func NewPostgresqlHandlers(db *driver.DB, a *config.AppConfig) *DBRepo {
 }
 
 func (repo *DBRepo) Home(c *gin.Context) {
-	helpers.SuccessResponse(c, http.StatusOK, nil, "Welcome to timemyth")
+	utils.SuccessResponse(c, http.StatusOK, nil, "Welcome to timemyth")
 }
 
 func (repo *DBRepo) SignUp(c *gin.Context) {
 	var userInput models.SignUpInput
 	if err := c.ShouldBindJSON(&userInput); err != nil {
-		validationErrs := helpers.ParseValidationError(err)
-		helpers.FailedResponse(c, http.StatusBadRequest, validationErrs, "")
+		validationErrs := utils.ParseValidationError(err)
+		utils.FailedResponse(c, http.StatusBadRequest, validationErrs, "")
 		return
 	}
 	if userInput.Password != userInput.PasswordConfirm {
-		helpers.FailedResponse(c, http.StatusBadRequest, nil, "password and password confirm didn't match")
+		utils.FailedResponse(c, http.StatusBadRequest, nil, "password and password confirm didn't match")
 		return
 	}
 	userDB, err := repo.DB.InsertUser(userInput)
 	if err != nil {
 		log.Println(err)
 		if strings.Contains(err.Error(), "duplicate key value") {
-			helpers.FailedResponse(c, http.StatusBadRequest, nil, "email already exists")
+			utils.FailedResponse(c, http.StatusBadRequest, nil, "email already exists")
 		}
 		return
 	}
-	helpers.SuccessResponse(c, http.StatusCreated, userDB.FilterUserResponse(), "")
+	utils.SuccessResponse(c, http.StatusCreated, userDB.FilterUserResponse(), "")
 }
 
 func (repo *DBRepo) SignIn(c *gin.Context) {
 	var userInput models.SignInInput
 	if err := c.ShouldBindJSON(&userInput); err != nil {
-		validationErrs := helpers.ParseValidationError(err)
-		helpers.FailedResponse(c, http.StatusBadRequest, validationErrs, "")
+		validationErrs := utils.ParseValidationError(err)
+		utils.FailedResponse(c, http.StatusBadRequest, validationErrs, "")
 		return
 	}
 	userDB, err := repo.DB.FindUserByEmail(userInput)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			helpers.FailedResponse(c, http.StatusUnauthorized, nil, "")
+			utils.FailedResponse(c, http.StatusUnauthorized, nil, "")
 			return
 		}
-		helpers.FailedResponse(c, http.StatusInternalServerError, nil, "")
+		utils.FailedResponse(c, http.StatusInternalServerError, nil, "")
 		return
 	}
 	if err = bcrypt.CompareHashAndPassword([]byte(userDB.Password), []byte(userInput.Password)); err != nil {
-		helpers.FailedResponse(c, http.StatusUnauthorized, nil, "")
+		utils.FailedResponse(c, http.StatusUnauthorized, nil, "")
 		return
 	}
 	expiredAt := time.Now().UTC().Add(constants.JWTExpireDuration)
-	accessToken, err := helpers.GenerateJWT(&userDB, expiredAt)
+	accessToken, err := utils.GenerateJWT(&userDB, expiredAt)
 	if err != nil {
-		helpers.FailedResponse(c, http.StatusInternalServerError, nil, "")
+		utils.FailedResponse(c, http.StatusInternalServerError, nil, "")
 		return
 	}
-	helpers.SuccessResponse(c, http.StatusOK, models.SignInOutput{AccessToken: accessToken}, "")
+	utils.SuccessResponse(c, http.StatusOK, models.SignInOutput{AccessToken: accessToken}, "")
 }
 
 func Ping(c *gin.Context) {
-	helpers.SuccessResponse(c, http.StatusOK, gin.H{"message": "pong"}, "")
+	utils.SuccessResponse(c, http.StatusOK, gin.H{"message": "pong"}, "")
 }

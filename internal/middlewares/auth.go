@@ -2,7 +2,7 @@ package middlewares
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/mjaliz/gotracktime/internal/helpers"
+	"github.com/mjaliz/gotracktime/internal/utils"
 	"net/http"
 	"strings"
 )
@@ -12,13 +12,13 @@ func Auth() gin.HandlerFunc {
 		token := c.GetHeader("Authorization")
 		tokenString := strings.TrimPrefix(token, "Bearer ")
 		if tokenString == "" {
-			helpers.FailedResponse(c, http.StatusUnauthorized, nil, "")
+			utils.FailedResponse(c, http.StatusUnauthorized, nil, "")
 			c.Abort()
 			return
 		}
-		err := helpers.ValidateToken(tokenString)
+		err := utils.ValidateToken(tokenString)
 		if err != nil {
-			helpers.FailedResponse(c, http.StatusUnauthorized, nil, "")
+			utils.FailedResponse(c, http.StatusUnauthorized, nil, "")
 			c.Abort()
 			return
 		}
