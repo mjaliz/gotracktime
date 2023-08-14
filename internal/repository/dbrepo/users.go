@@ -2,20 +2,15 @@ package dbrepo
 
 import (
 	"github.com/mjaliz/gotracktime/internal/models"
-	"golang.org/x/crypto/bcrypt"
 )
 
 func (p *postgresDBRepo) InsertUser(u models.SignUpInput) (models.User, error) {
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(u.Password), 14)
-	if err != nil {
-		return models.User{}, err
-	}
 	userDB := models.User{
 		Name:     u.Name,
 		Email:    u.Email,
-		Password: string(hashedPassword),
+		Password: u.Password,
 	}
-	if err = p.DB.Create(&userDB).Error; err != nil {
+	if err := p.DB.Create(&userDB).Error; err != nil {
 		return models.User{}, err
 	}
 	return userDB, nil

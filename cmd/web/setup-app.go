@@ -27,6 +27,6 @@ func setupApp() error {
 
 	repo = handlers.NewPostgresqlHandlers(db, &app)
 	handlers.NewHandlers(repo, &app)
-	utils.NewHelpers(&app)
+	utils.NewUtils(&app)
 	return err
 }

@@ -5,13 +5,15 @@ import (
 	"time"
 )
 
+// User is the user model definition
 type User struct {
 	gorm.Model
-	Name        string
-	Email       string `gorm:"not null;uniqueIndex"`
-	Password    string `gorm:"not null"`
-	UserActive  int    `gorm:"not null;default:1"`
-	AccessLevel int    `gorm:"not null;default:1"`
+	Name         string
+	Email        string `gorm:"not null;uniqueIndex"`
+	Password     string `gorm:"not null"`
+	Role         int    `gorm:"not null;default:1"`
+	IsActive     bool   `gorm:"not null;default:false"`
+	TimeEntities []TimeEntity
 }
 
 type SignUpInput struct {

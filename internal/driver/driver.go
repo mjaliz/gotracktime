@@ -24,7 +24,7 @@ func ConnectPostgres(dsn string) (*DB, error) {
 }
 
 func autoMigrate(d *gorm.DB) error {
-	err := d.AutoMigrate(&models.User{})
+	err := d.AutoMigrate(&models.User{}, &models.Project{}, &models.Description{}, &models.TimeEntity{})
 	if err != nil {
 		return err
 	}

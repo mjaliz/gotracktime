@@ -10,7 +10,6 @@ import (
 	"github.com/mjaliz/gotracktime/internal/repository"
 	"github.com/mjaliz/gotracktime/internal/repository/dbrepo"
 	"github.com/mjaliz/gotracktime/internal/utils"
-	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 	"log"
 	"net/http"
@@ -57,6 +56,12 @@ func (repo *DBRepo) SignUp(c *gin.Context) {
 		utils.FailedResponse(c, http.StatusBadRequest, nil, "password and password confirm didn't match")
 		return
 	}
+	hashedPassword, err := utils.HashPassword(userInput.Password)
+	if err != nil {
+		utils.FailedResponse(c, http.StatusInternalServerError, nil, "")
+		return
+	}
+	userInput.Password = hashedPassword
 	userDB, err := repo.DB.InsertUser(userInput)
 	if err != nil {
 		log.Println(err)
@@ -84,7 +89,7 @@ func (repo *DBRepo) SignIn(c *gin.Context) {
 		utils.FailedResponse(c, http.StatusInternalServerError, nil, "")
 		return
 	}
-	if err = bcrypt.CompareHashAndPassword([]byte(userDB.Password), []byte(userInput.Password)); err != nil {
+	if err = utils.ComparePassword(userDB.Password, userInput.Password); err != nil {
 		utils.FailedResponse(c, http.StatusUnauthorized, nil, "")
 		return
 	}

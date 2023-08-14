@@ -27,9 +27,9 @@ func NewPostgresRepo(Conn *gorm.DB, a *config.AppConfig) repository.DatabaseRepo
 	}
 }
 
-func NewTestRepo(Conn *gorm.DB, a *config.AppConfig) repository.DatabaseRepo {
-	app = a
-	return &testDBRepo{
-		App: a,
-	}
-}
+//func NewTestRepo(Conn *gorm.DB, a *config.AppConfig) repository.DatabaseRepo {
+//	app = a
+//	return &testDBRepo{
+//		App: a,
+//	}
+//}
