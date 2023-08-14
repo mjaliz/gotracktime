@@ -31,7 +31,7 @@ func GenerateJWT(u *models.User, expiredAt time.Time) (string, error) {
 	return tokenString, nil
 }
 
-func ValidateToken(signedToken string) error {
+func ValidateToken(signedToken string) (*JWTClaim, error) {
 	token, err := jwt.ParseWithClaims(
 		signedToken,
 		&JWTClaim{},
@@ -40,7 +40,7 @@ func ValidateToken(signedToken string) error {
 		},
 	)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	claims, ok := token.Claims.(*JWTClaim)
 	if !ok {
@@ -48,7 +48,7 @@ func ValidateToken(signedToken string) error {
 	}
 	if claims.ExpiresAt.Unix() < time.Now().UTC().Unix() {
 		err = errors.New("token expired")
-		return err
+		return nil, err
 	}
-	return nil
+	return claims, nil
 }

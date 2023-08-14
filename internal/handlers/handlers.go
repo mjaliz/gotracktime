@@ -103,5 +103,12 @@ func (repo *DBRepo) SignIn(c *gin.Context) {
 }
 
 func Ping(c *gin.Context) {
-	utils.SuccessResponse(c, http.StatusOK, gin.H{"message": "pong"}, "")
+	userClaim, ok := c.Get(constants.UserClaims)
+	if !ok {
+		utils.FailedResponse(c, http.StatusForbidden, nil, "")
+	}
+	user := userClaim.(*utils.JWTClaim)
+
+	//fmt.Println()
+	utils.SuccessResponse(c, http.StatusOK, gin.H{"message": "pong", "userid": user.UserID}, "")
 }
