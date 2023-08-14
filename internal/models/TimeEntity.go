@@ -9,17 +9,17 @@ import (
 type TimeEntity struct {
 	gorm.Model
 	StartedAt     time.Time `gorm:"not null"`
-	StoppedAt     time.Time
+	StoppedAt     *time.Time
 	UserID        uint `gorm:"not null"`
-	DescriptionID uint
-	ProjectID     uint
+	DescriptionID *uint
+	ProjectID     *uint
 }
 
 type TimeEntityInput struct {
 	UserID        uint      `json:"-"`
 	StartedAt     time.Time `json:"started_at" binding:"required"`
-	DescriptionID uint      `json:"description_id,omitempty"`
-	ProjectID     uint      `json:"project_id,omitempty"`
+	DescriptionID *uint     `json:"description_id,omitempty"`
+	ProjectID     *uint     `json:"project_id,omitempty"`
 }
 
 type TimeEntityOutput struct {
