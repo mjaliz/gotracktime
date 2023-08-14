@@ -9,9 +9,10 @@ import (
 func setupRoutes() *gin.Engine {
 	r := gin.Default()
 	r.GET("/", handlers.Repo.Home)
-	r.POST("/user/sign_up", handlers.Repo.SignUp)
-	r.POST("/user/sign_in", handlers.Repo.SignIn)
+	r.POST("/user/signUp", handlers.Repo.SignUp)
+	r.POST("/user/signIn", handlers.Repo.SignIn)
 	r.Use(middlewares.Auth())
 	r.GET("/ping", handlers.Ping)
+	r.POST("/timeEntity", handlers.Repo.CreateTimeEntity)
 	return r
 }

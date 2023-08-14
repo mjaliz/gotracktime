@@ -112,3 +112,29 @@ func Ping(c *gin.Context) {
 	//fmt.Println()
 	utils.SuccessResponse(c, http.StatusOK, gin.H{"message": "pong", "userid": user.UserID}, "")
 }
+
+func (repo *DBRepo) CreateTimeEntity(c *gin.Context) {
+	userClaim, ok := c.Get(constants.UserClaims)
+	if !ok {
+		utils.FailedResponse(c, http.StatusForbidden, nil, "")
+	}
+	user := userClaim.(*utils.JWTClaim)
+	var timeEntityInput models.TimeEntityInput
+	if err := c.ShouldBindJSON(&timeEntityInput); err != nil {
+		validationErrs := utils.ParseValidationError(err)
+		utils.FailedResponse(c, http.StatusBadRequest, validationErrs, "")
+		return
+	}
+	timeEntityInput.UserID = user.UserID
+	timeEntityDB, err := repo.DB.InsertTimeEntity(timeEntityInput)
+	if err != nil {
+		utils.FailedResponse(c, http.StatusInternalServerError, nil, "")
+		return
+	}
+	var output models.TimeEntityOutput
+	output.CreatedAt = timeEntityDB.CreatedAt
+	output.StartedAt = timeEntityDB.StartedAt
+	output.DescriptionID = timeEntityDB.DescriptionID
+	output.ProjectID = timeEntityDB.ProjectID
+	utils.SuccessResponse(c, http.StatusCreated, output, "")
+}

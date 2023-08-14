@@ -7,4 +7,5 @@ import (
 type DatabaseRepo interface {
 	InsertUser(user models.SignUpInput) (models.User, error)
 	FindUserByEmail(user models.SignInInput) (models.User, error)
+	InsertTimeEntity(timeEntity models.TimeEntityInput) (models.TimeEntity, error)
 }
