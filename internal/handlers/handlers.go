@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/mjaliz/gotracktime/internal/config"
 	"github.com/mjaliz/gotracktime/internal/constants"
@@ -132,9 +133,29 @@ func (repo *DBRepo) CreateTimeEntity(c *gin.Context) {
 		return
 	}
 	var output models.TimeEntityOutput
+	fmt.Println(timeEntityDB.CreatedAt)
+	// TODO: fix the issue of insert record in db with different timezone to UTC
 	output.CreatedAt = timeEntityDB.CreatedAt
 	output.StartedAt = timeEntityDB.StartedAt
 	output.DescriptionID = timeEntityDB.DescriptionID
 	output.ProjectID = timeEntityDB.ProjectID
+	utils.SuccessResponse(c, http.StatusCreated, output, "")
+}
+
+func (repo *DBRepo) CreateProject(c *gin.Context) {
+	var projectInput models.ProjectInput
+	if err := c.ShouldBindJSON(&projectInput); err != nil {
+		validationErrs := utils.ParseValidationError(err)
+		utils.FailedResponse(c, http.StatusBadRequest, validationErrs, "")
+		return
+	}
+	projectDB, err := repo.DB.InsertProject(projectInput)
+	if err != nil {
+		utils.FailedResponse(c, http.StatusInternalServerError, nil, "")
+		return
+	}
+	var output models.ProjectOutput
+	output.CreatedAt = projectDB.CreatedAt
+	output.Title = projectDB.Title
 	utils.SuccessResponse(c, http.StatusCreated, output, "")
 }

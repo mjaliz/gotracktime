@@ -14,5 +14,6 @@ func setupRoutes() *gin.Engine {
 	r.Use(middlewares.Auth())
 	r.GET("/ping", handlers.Ping)
 	r.POST("/timeEntity", handlers.Repo.CreateTimeEntity)
+	r.POST("/project", handlers.Repo.CreateProject)
 	return r
 }
