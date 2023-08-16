@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"errors"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/mjaliz/gotracktime/internal/config"
 	"github.com/mjaliz/gotracktime/internal/constants"
@@ -133,8 +132,6 @@ func (repo *DBRepo) CreateTimeEntity(c *gin.Context) {
 		return
 	}
 	var output models.TimeEntityOutput
-	fmt.Println(timeEntityDB.CreatedAt)
-	// TODO: fix the issue of insert record in db with different timezone to UTC
 	output.CreatedAt = timeEntityDB.CreatedAt
 	output.StartedAt = timeEntityDB.StartedAt
 	output.DescriptionID = timeEntityDB.DescriptionID
