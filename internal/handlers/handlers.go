@@ -5,6 +5,7 @@ import (
 	"github.com/mjaliz/gotracktime/internal/config"
 	"github.com/mjaliz/gotracktime/internal/constants"
 	"github.com/mjaliz/gotracktime/internal/driver"
+	"github.com/mjaliz/gotracktime/internal/middlewares"
 	"github.com/mjaliz/gotracktime/internal/repository"
 	"github.com/mjaliz/gotracktime/internal/repository/dbrepo"
 	"github.com/mjaliz/gotracktime/internal/utils"
@@ -19,6 +20,18 @@ var app *config.AppConfig
 type DBRepo struct {
 	App *config.AppConfig
 	DB  repository.DatabaseRepo
+}
+
+func SetupRouters() *gin.Engine {
+	r := gin.Default()
+	r.GET("/", Repo.Home)
+	r.POST("/user/signUp", Repo.SignUp)
+	r.POST("/user/signIn", Repo.SignIn)
+	r.Use(middlewares.Auth())
+	r.GET("/ping", Ping)
+	r.POST("/timeEntity", Repo.CreateTimeEntity)
+	r.POST("/project", Repo.CreateProject)
+	return r
 }
 
 // NewHandlers creates the handlers
