@@ -15,7 +15,6 @@ type postgresDBRepo struct {
 
 type testDBRepo struct {
 	App *config.AppConfig
-	DB  *gorm.DB
 }
 
 // NewPostgresRepo creates the repository
@@ -27,9 +26,9 @@ func NewPostgresRepo(Conn *gorm.DB, a *config.AppConfig) repository.DatabaseRepo
 	}
 }
 
-//func NewTestRepo(Conn *gorm.DB, a *config.AppConfig) repository.DatabaseRepo {
-//	app = a
-//	return &testDBRepo{
-//		App: a,
-//	}
-//}
+func NewTestRepo(a *config.AppConfig) repository.DatabaseRepo {
+	app = a
+	return &testDBRepo{
+		App: a,
+	}
+}

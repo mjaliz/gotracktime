@@ -14,3 +14,13 @@ func (p *postgresDBRepo) InsertTimeEntity(te models.TimeEntityInput) (models.Tim
 	}
 	return timeEntityDB, nil
 }
+
+func (p *testDBRepo) InsertTimeEntity(te models.TimeEntityInput) (models.TimeEntity, error) {
+	timeEntityDB := models.TimeEntity{
+		UserID:        te.UserID,
+		StartedAt:     te.StartedAt,
+		DescriptionID: te.DescriptionID,
+		ProjectID:     te.ProjectID,
+	}
+	return timeEntityDB, nil
+}

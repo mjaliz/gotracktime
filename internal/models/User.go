@@ -14,6 +14,7 @@ type User struct {
 	Role         int    `gorm:"not null;default:1"`
 	IsActive     bool   `gorm:"not null;default:false"`
 	TimeEntities []TimeEntity
+	Projects     []Project
 }
 
 type SignUpInput struct {
