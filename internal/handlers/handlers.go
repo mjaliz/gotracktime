@@ -22,7 +22,8 @@ type DBRepo struct {
 	DB  repository.DatabaseRepo
 }
 
-func SetupRouters() *gin.Engine {
+// NewRouters setups all the routes that we have in app
+func NewRouters() *gin.Engine {
 	r := gin.Default()
 	r.GET("/", Repo.Home)
 	r.POST("/user/signUp", Repo.SignUp)

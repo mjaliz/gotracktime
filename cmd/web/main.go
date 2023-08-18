@@ -26,7 +26,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	r := handlers.SetupRouters()
+	r := handlers.NewRouters()
 	if err = r.Run(":8080"); err != nil {
 		log.Fatal(err)
 	}
