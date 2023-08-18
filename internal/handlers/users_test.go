@@ -3,7 +3,7 @@ package handlers
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
+	"github.com/gin-gonic/gin"
 	"github.com/go-playground/assert/v2"
 	"github.com/mjaliz/gotracktime/internal/models"
 	"net/http"
@@ -12,7 +12,7 @@ import (
 )
 
 func TestDBRepo_SignIn(t *testing.T) {
-	r := SetupRouters()
+	r := setUpTestRoutes()
 	recorder := httptest.NewRecorder()
 	url := "/user/signIn"
 	testSignIn := models.SignUpInput{
@@ -29,12 +29,11 @@ func TestDBRepo_SignIn(t *testing.T) {
 		t.Fatal(err)
 	}
 	r.ServeHTTP(recorder, request)
-	fmt.Println(recorder.Code)
 	assert.Equal(t, http.StatusOK, recorder.Code)
 }
 
 func signUp(user models.SignUpInput) (models.User, error) {
-	r := SetupRouters()
+	r := setUpTestRoutes()
 	recorder := httptest.NewRecorder()
 	url := "/user/signUp"
 	testSignUp := models.SignUpInput{
@@ -58,4 +57,10 @@ func signUp(user models.SignUpInput) (models.User, error) {
 	}
 	r.ServeHTTP(recorder, request)
 	return userDB, nil
+}
+
+func setUpTestRoutes() *gin.Engine {
+	gin.SetMode(gin.TestMode)
+	r := SetupRouters()
+	return r
 }
