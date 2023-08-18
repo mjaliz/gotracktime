@@ -2,6 +2,7 @@ package dbrepo
 
 import (
 	"github.com/mjaliz/gotracktime/internal/models"
+	"github.com/mjaliz/gotracktime/internal/utils"
 )
 
 func (p *postgresDBRepo) InsertUser(u models.SignUpInput) (models.User, error) {
@@ -34,6 +35,12 @@ func (p *testDBRepo) InsertUser(u models.SignUpInput) (models.User, error) {
 }
 
 func (p *testDBRepo) FindUserByEmail(u models.SignInInput) (models.User, error) {
+	hashedPassword, err := utils.HashPassword(u.Password)
+	if err != nil {
+		return models.User{}, err
+	}
 	var user models.User
+	user.Email = u.Email
+	user.Password = hashedPassword
 	return user, nil
 }

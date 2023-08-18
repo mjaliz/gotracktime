@@ -48,9 +48,10 @@ func NewPostgresqlHandlers(db *driver.DB, a *config.AppConfig) *DBRepo {
 	}
 }
 
-func NewTestHandlers(a *config.AppConfig) *DBRepo {
+func NewDBTestHandlers(a *config.AppConfig) *DBRepo {
 	return &DBRepo{
 		App: a,
+		DB:  dbrepo.NewTestingRepo(a),
 	}
 }
 

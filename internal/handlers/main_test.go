@@ -3,6 +3,7 @@ package handlers
 import (
 	"github.com/mjaliz/gotracktime/internal/config"
 	"github.com/mjaliz/gotracktime/internal/utils"
+	"os"
 	"testing"
 )
 
@@ -15,7 +16,8 @@ func TestMain(m *testing.M) {
 
 	testApp = a
 
-	testRepo = NewTestHandlers(&testApp)
+	testRepo = NewDBTestHandlers(&testApp)
 	NewHandlers(testRepo, &testApp)
 	utils.NewUtils(&testApp)
+	os.Exit(m.Run())
 }
