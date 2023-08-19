@@ -2,8 +2,6 @@ package dbrepo
 
 import (
 	"github.com/mjaliz/gotracktime/internal/models"
-	"github.com/mjaliz/gotracktime/internal/utils"
-	"gorm.io/gorm"
 )
 
 func (p *postgresDBRepo) InsertUser(u models.SignUpInput) (models.User, error) {
@@ -35,24 +33,24 @@ func (p *testDBRepo) InsertUser(u models.SignUpInput) (models.User, error) {
 	return userDB, nil
 }
 
-func (p *testDBRepo) FindUserByEmail(u models.SignInInput) (models.User, error) {
-	hashedPassword, err := utils.HashPassword(u.Password)
-	var user models.User
-	user.Email = u.Email
-	user.Password = hashedPassword
-	if err != nil {
-		return models.User{}, err
-	}
-	if u.Email == "unauthorized@gmail.com" {
-		return models.User{}, gorm.ErrRecordNotFound
-	}
-	if u.Email == "internalServerError@gmail.com" {
-		return models.User{}, gorm.ErrUnsupportedDriver
-	}
-	if u.Email == "hashPasswordError@gmail.com" {
-		user.Password = "wrongPassword"
-		return user, nil
-	}
-
-	return user, nil
-}
+//func (p *testDBRepo) FindUserByEmail(u models.SignInInput) (models.User, error) {
+//	hashedPassword, err := utils.HashPassword(u.Password)
+//	var user models.User
+//	user.Email = u.Email
+//	user.Password = hashedPassword
+//	if err != nil {
+//		return models.User{}, err
+//	}
+//	if u.Email == "unauthorized@gmail.com" {
+//		return models.User{}, gorm.ErrRecordNotFound
+//	}
+//	if u.Email == "internalServerError@gmail.com" {
+//		return models.User{}, gorm.ErrUnsupportedDriver
+//	}
+//	if u.Email == "hashPasswordError@gmail.com" {
+//		user.Password = "wrongPassword"
+//		return user, nil
+//	}
+//
+//	return user, nil
+//}

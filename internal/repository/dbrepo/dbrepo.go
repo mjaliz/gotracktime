@@ -3,6 +3,7 @@ package dbrepo
 import (
 	"github.com/mjaliz/gotracktime/internal/config"
 	"github.com/mjaliz/gotracktime/internal/repository"
+	mockdb "github.com/mjaliz/gotracktime/internal/repository/mock"
 	"gorm.io/gorm"
 )
 
@@ -15,7 +16,7 @@ type postgresDBRepo struct {
 
 type testDBRepo struct {
 	App *config.AppConfig
-	DB  *gorm.DB
+	DB  *mockdb.MockDatabaseRepo
 }
 
 // NewPostgresRepo creates the repository
@@ -27,10 +28,7 @@ func NewPostgresRepo(Conn *gorm.DB, a *config.AppConfig) repository.DatabaseRepo
 	}
 }
 
-func NewTestingRepo(a *config.AppConfig) repository.DatabaseRepo {
+func NewTestingRepo(a *config.AppConfig, mockDB *mockdb.MockDatabaseRepo) repository.DatabaseRepo {
 	app = a
-	return &testDBRepo{
-		App: a,
-		DB:  &gorm.DB{},
-	}
+	return mockDB
 }

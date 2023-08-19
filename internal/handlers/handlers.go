@@ -8,6 +8,7 @@ import (
 	"github.com/mjaliz/gotracktime/internal/middlewares"
 	"github.com/mjaliz/gotracktime/internal/repository"
 	"github.com/mjaliz/gotracktime/internal/repository/dbrepo"
+	mockdb "github.com/mjaliz/gotracktime/internal/repository/mock"
 	"github.com/mjaliz/gotracktime/internal/utils"
 	"net/http"
 )
@@ -49,10 +50,10 @@ func NewPostgresqlHandlers(db *driver.DB, a *config.AppConfig) *DBRepo {
 	}
 }
 
-func NewDBTestHandlers(a *config.AppConfig) *DBRepo {
+func NewDBTestHandlers(a *config.AppConfig, mockDB *mockdb.MockDatabaseRepo) *DBRepo {
 	return &DBRepo{
 		App: a,
-		DB:  dbrepo.NewTestingRepo(a),
+		DB:  dbrepo.NewTestingRepo(a, mockDB),
 	}
 }
 
