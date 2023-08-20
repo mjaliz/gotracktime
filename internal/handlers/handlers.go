@@ -67,7 +67,7 @@ func Ping(c *gin.Context) {
 }
 
 func getUserFromContext(c *gin.Context) (user *utils.JWTClaim) {
-	userClaim, ok := c.Get(constants.UserClaims)
+	userClaim, ok := c.Get(constants.AuthorizationPayload)
 	if !ok {
 		utils.FailedResponse(c, http.StatusForbidden, nil, "")
 	}
